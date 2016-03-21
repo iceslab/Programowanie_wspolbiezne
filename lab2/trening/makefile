@@ -1,0 +1,14 @@
+CXX=clang
+CXXFLAGS=-c -O3
+LDFLAGS=
+SOURCES=zad1.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=main
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@ $(LIBS)
+
+.c.o:
+	$(CXX) $(CXXFLAGS) $< -o $@

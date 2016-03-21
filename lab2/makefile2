@@ -1,0 +1,10 @@
+all: pierwszy drugi
+CC=gcc
+INCLUDE=.
+CFLAGS=-Wall
+WYKONYWALNE=pierwszy drugi
+ZRODLA= pierwszy.c drugi.c wspolny.c 
+pierwszy: pierwszy.c wspolny.c wspolny.h
+	$(CC) -o pierwszy -I$(INCLUDE) $(CFLAGS) $(ZRODLA)
+drugi: drugi.c wspolny.c wspolny.h
+	gcc -o drugi drugi.c wspolny.c

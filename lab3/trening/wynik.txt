@@ -1,0 +1,5 @@
+1 5133
+2 4459
+3 4256
+4 4136
+Liczb pierwszych: 17984, czas trwania: 4 s

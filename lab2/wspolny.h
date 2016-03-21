@@ -1,0 +1,1 @@
+void pisz(char * tekst);

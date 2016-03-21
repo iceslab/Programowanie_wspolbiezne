@@ -30,3 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+przyklady/
+.directory
+LabLinux44.pdf
+*/bin
