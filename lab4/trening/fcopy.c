@@ -38,7 +38,7 @@ int main(int argc, char** argv)
                     bytes_read = fread(buf, sizeof(char), SECTOR_SIZE, file1);
                     fwrite(buf, sizeof(char), bytes_read, file2);
                 } while(!feof(file1));
-                
+
                 printf("Zakończono kopiowanie\n%s  =>  %s\n", 
                        argv[1], 
                        argv[2]);
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     else
     {
         printf("Nieprawidłowa ilość argumentów (%d): podaj dwa argumenty\n"
-               "copy [src] [dst]\n", 
+               "fcopy [src] [dst]\n", 
                argc - 1);
     }
     
