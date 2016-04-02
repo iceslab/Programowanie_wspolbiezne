@@ -1,14 +1,4 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-
-#define PIPE_ERROR -1
-#define SLEEP_ERROR -1
-#define USLEEP_ERROR -1
-#define ITERATIONS 10
-#define SLEEP_SEC 1U
-#define SLEEP_USEC 100U*1000U
+#include "common.h"
 
 int main(int argc, char* argv[])
 {
@@ -26,7 +16,7 @@ int main(int argc, char* argv[])
 			int number = 0, i = 1;
 			for(; i <= ITERATIONS; ++i)
 			{
-				read(fd[0], &number, sizeof(int));
+				read(fd[READ_PIPE], &number, sizeof(int));
 				printf("Potomny: odczytano liczbę %d\n", number);
 			}
 			exit(0);
@@ -35,7 +25,7 @@ int main(int argc, char* argv[])
 		int i = 1;
 		for(; i <= ITERATIONS; ++i)
 		{
-			write(fd[1], &i, sizeof(int));
+			write(fd[WRITE_PIPE], &i, sizeof(int));
 			printf("Macierzysty: zapisano liczbę %d\n", i);
 			if(usleep(SLEEP_USEC) == USLEEP_ERROR)
 				perror("Nie można uśpić");
