@@ -5,18 +5,25 @@ EXEC_3=popen
 EXEC_4=pierwsze
 EXEC_5=fifo_save
 EXEC_6=fifo_read
+EXEC_7=pierwsze_named
+EXEC_8=licz
 
 SOURCES_1=simple.c
 SOURCES_2=simple_modify.c
 SOURCES_3=popen.c
 SOURCES_4=pierwsze.c primes_utils.c
+
 SOURCES_5=fifo_save.c
 SOURCES_6=fifo_read.c
+
+SOURCES_7=pierwsze_named.c primes_utils.c
+SOURCES_8=licz.c primes_utils.c
 
 BIN=bin
 
 CFLAGS=-g
-all: $(EXEC_1) $(EXEC_2) $(EXEC_3) $(EXEC_4) $(EXEC_5) $(EXEC_6)
+
+all: $(EXEC_1) $(EXEC_2) $(EXEC_3) $(EXEC_4) $(EXEC_5) $(EXEC_6) $(EXEC_7) $(EXEC_8)
 $(EXEC_1): $(SOURCES_1)
 	$(CC) -o $(BIN)/$(EXEC_1) $(CFLAGS) $(SOURCES_1)
 $(EXEC_2): $(SOURCES_2)
@@ -29,5 +36,9 @@ $(EXEC_5): $(SOURCES_5)
 	$(CC) -o $(BIN)/$(EXEC_5) $(CFLAGS) $(SOURCES_5)
 $(EXEC_6): $(SOURCES_6)
 	$(CC) -o $(BIN)/$(EXEC_6) $(CFLAGS) $(SOURCES_6)
+$(EXEC_7): $(SOURCES_7)
+	$(CC) -o $(BIN)/$(EXEC_7) $(CFLAGS) $(SOURCES_7)
+$(EXEC_8): $(SOURCES_8)
+	$(CC) -o $(BIN)/$(EXEC_8) $(CFLAGS) $(SOURCES_8)
 clean:
 	rm -rf *.o $(BIN)/*
