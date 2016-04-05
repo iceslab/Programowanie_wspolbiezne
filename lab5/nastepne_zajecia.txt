@@ -1,0 +1,3 @@
+Kolejki komunikatów POSIX:
+rozwiązanie problemu producenta i konsumenta
+liczby pierwsze na POSIX
