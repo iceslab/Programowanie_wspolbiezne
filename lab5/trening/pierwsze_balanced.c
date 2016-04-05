@@ -3,73 +3,83 @@
 int main(int argc, char** argv)
 {
 	// printf("%s\n", argv[0]);
-	if(argc == 4) 
+	if(argc == 5) 
 	{
 		int begin = atoi(argv[1]);
 		int end = atoi(argv[2]);
 		int processes = atoi(argv[3]);
+		int partitionLength = atoi(argv[4]);
 		time_t start_time = time(NULL);
-		int fifo = 0;
+		int fifo_in = 0;
+		int fifo_out = 0;
 		int initResult = INITIALIZE_SUCCESS;
 
 		char* subprocessName = NULL;
 		char* lastSlash = strrchr(argv[0], (int)'/');
-		printf("argv[0] == %s\n", argv[0]);
 		if(NULL != lastSlash)
 		{
 			printf("lastSlash == \"%c\"\n", *lastSlash);
 			int basePathLength = lastSlash - argv[0] + 1;
-			int subprocessNameLength = basePathLength + strlen(SUBPROCESS_NAME) + 1;
+			int subprocessNameLength = basePathLength + strlen(SUBPROCESS_BALANCED_NAME) + 1;
 			subprocessName = (char*)malloc(subprocessNameLength * sizeof(char));
 			memset(subprocessName, 0, subprocessNameLength);
 			strncpy(subprocessName, argv[0], basePathLength);
-			strcat(subprocessName, SUBPROCESS_NAME);
-			printf("%s\n", subprocessName);
+			strcat(subprocessName, SUBPROCESS_BALANCED_NAME);
 		}
-		else
+
+		if(MKFIFO_SUCCESS != mkfifo(FIFO_IN_NAME, PERMISSIONS))
 		{
-			printf("lastSlash == NULL\n");
+			perror("mkfifo_in");
 		}
 
 		if(MKFIFO_SUCCESS != mkfifo(FIFO_OUT_NAME, PERMISSIONS))
 		{
-			perror("mkfifo");
+			perror("mkfifo_out");
 		}
 
-		fifo = open(FIFO_OUT_NAME, O_RDWR);
-		// Jeśli otwarto pipe
-		if(fifo > 0)
+		printf("Otwieranie pipe'ów\n");
+		fifo_in = open(FIFO_IN_NAME, O_RDWR);
+		printf("Ukończono otwieranie pipe'ów\n");
+
+		// Jeśli otwarto pipe'y
+		if(fifo_in > 0)
 		{
 			int proc_begin, proc_end = begin;
 
 			// Rezerwacja pamięci na string
 			char str[INT_STR_LENGTH];
-			char str_beg[INT_STR_LENGTH];
-			char str_end[INT_STR_LENGTH];
 			char str_i[INT_STR_LENGTH];
 			
 			// Tworzenie procesów
+			printf("Tworzenie procesów\n");
 			for(int i = 1; i <= processes; ++i)
 			{
-				proc_begin = proc_end;
-				proc_end = ((i / (float)processes) * (end - begin)) + begin;
-
-				sprintf(str_beg, "%d", proc_begin);
-				sprintf(str_end, "%d", proc_end);
 				sprintf(str_i, "%d", i);
-
 				if(fork() == 0)
 				{
 					// Podmienianie obrazu w pamięci
 					execl(subprocessName, 
 						  subprocessName, 
-						  str_beg, 
-						  str_end,
 						  str_i,
 						  NULL);
 					perror("Nie udało się utworzyć procesu");
 				}
 			}
+			printf("Ukończono tworzenie procesów\n");
+
+			fifo_out = open(FIFO_OUT_NAME, O_RDONLY | O_NONBLOCK);
+
+			// Zapełnianie kolejki
+			printf("Zapełnianie kolejki\n");
+			for(int i = 0; i < partitionLength; ++i)
+			{
+				proc_begin = proc_end;
+				proc_end = ((i / (float)partitionLength) * (end - begin)) + begin;
+
+				struct results order = {proc_begin, proc_end, i};
+				write(fifo_in, &order, sizeof(order));
+			}
+			printf("Ukończono zapełnianie kolejki\n");
 		}
 		else
 		{
@@ -77,16 +87,21 @@ int main(int argc, char** argv)
 			initResult = INITIALIZE_FAIL;
 		}
 
-
 		// Jeśli udało się utworzyć pipe i procesy potomne
 		if(INITIALIZE_SUCCESS == initResult)
 		{
+			// printf("Otwieranie pipe'ów\n");
+			
+			// printf("Ukończono otwieranie pipe'ów\n");
+			
 			struct results res;
 			int proc_number = 0, proc_primes = 0, primes = 0;
 			
 			for(int i = 0; i < processes; ++i)
 			{
-				read(fifo, &res, sizeof(res));
+				printf("Rozpoczęcie czytania\n");
+				read(fifo_out, &res, sizeof(res));
+				printf("Koniec czytania\n");
 				primes += res.count;
 			}
 
@@ -97,7 +112,7 @@ int main(int argc, char** argv)
 				pid = wait(&status);
 				printf("Proces %d zakończony\n", pid);
 			}
-
+			
 			start_time = time(NULL) - start_time;
 			printf("Liczb pierwszych: %d, czas trwania: %ld s\n", 
 				   primes, 
@@ -112,7 +127,7 @@ int main(int argc, char** argv)
 	}	
 	else
 	{
-		printf("Usage: pierwsze [begin] [end] [processes]\n");
+		printf("Usage: pierwsze [begin] [end] [processes] [partition length]\n");
 	}
 
 	return 0;

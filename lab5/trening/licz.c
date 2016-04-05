@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 		sscanf(argv[2], "%d", &end);
 		sscanf(argv[3], "%d", &process_number);
 
-		int fifo = open(FIFO_NAME, O_RDWR);
+		int fifo = open(FIFO_OUT_NAME, O_RDWR);
 		
 		// Jeśli otwarto plik
 		if(fifo != INVALID_FD)
