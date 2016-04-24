@@ -68,7 +68,7 @@ void releaseSubprocessName(char** subprocessName)
 	}
 }
 
-void makeQueues(mqd_t* queue_in, mqd_t* queue_out)
+int makeQueues(mqd_t* queue_in, mqd_t* queue_out, int oflag)
 {
 	struct mq_attr attr;
 	attr.mq_msgsize = sizeof(msg_t);
@@ -76,19 +76,41 @@ void makeQueues(mqd_t* queue_in, mqd_t* queue_out)
 	attr.mq_flags = 0;
 
 	*queue_in = mq_open(MQ_IN_NAME, 
-					    O_RDWR | O_CREAT, 
+					    oflag, 
 					    0660, 
 					    &attr);
+	if(0 > *queue_in)
+	{
+		perror("Nie udało się utworzyć kolejki in");
+		printf("Errno %d, %d\n", errno, *queue_in);
+		return 0;
+	}
+
 	*queue_out = mq_open(MQ_OUT_NAME, 
-						 O_RDWR | O_CREAT, 
+						 oflag, 
 						 0660, 
 						 &attr);
+	if(0 > *queue_out)
+	{
+		mq_close(*queue_in);
+		perror("Nie udało się utworzyć kolejki out");
+		printf("Errno %d, %d\n", errno, *queue_out);
+		return 0;
+	}
+
+	return 1;
 }
 
 void releaseQueues(mqd_t* queue_in, mqd_t* queue_out)
 {
 	mq_close(*queue_in);
 	mq_close(*queue_out);
-	mq_unlink(MQ_IN_NAME_NO_SLASH);
-	mq_unlink(MQ_OUT_NAME_NO_SLASH);
+}
+
+void unlinkQueues()
+{
+	if(0 > mq_unlink(MQ_IN_NAME))
+		perror("Nie można odłączyć kolejki in");
+	if(0 > mq_unlink(MQ_OUT_NAME))
+		perror("Nie można odłączyć kolejki out");
 }
