@@ -13,6 +13,7 @@
 #include <mqueue.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <semaphore.h>
 
 #define INT_STR_LENGTH sizeof(int)*8+1
 #define INVALID_FD -1

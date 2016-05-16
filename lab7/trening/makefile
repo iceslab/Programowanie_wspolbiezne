@@ -3,17 +3,13 @@ EXEC_1=pierwsze_semafory
 EXEC_2=init
 EXEC_3=producer
 EXEC_4=consumer
-
-EXEC_5=pierwsze_posix_balanced
-EXEC_6=licz_posix_balanced
+EXEC_5=readers_writers
 
 SOURCES_1=pierwsze_semafory.c primes_utils.c
 SOURCES_2=init.c
 SOURCES_3=producer.c
 SOURCES_4=consumer.c
-
-SOURCES_5=pierwsze_posix_balanced.c primes_utils.c
-SOURCES_6=licz_posix_balanced.c primes_utils.c
+SOURCES_5=readers_writers.c
 
 BIN=bin
 
