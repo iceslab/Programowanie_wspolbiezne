@@ -1,21 +1,25 @@
 CC=clang
 EXEC_1=pierwsze_semafory
-EXEC_2=producer
-EXEC_3=consumer
-EXEC_4=pierwsze_posix_balanced
-EXEC_5=licz_posix_balanced
+EXEC_2=init
+EXEC_3=producer
+EXEC_4=consumer
+
+EXEC_5=pierwsze_posix_balanced
+EXEC_6=licz_posix_balanced
 
 SOURCES_1=pierwsze_semafory.c primes_utils.c
-SOURCES_2=producer.c
-SOURCES_3=consumer.c
-SOURCES_4=pierwsze_posix_balanced.c primes_utils.c
-SOURCES_5=licz_posix_balanced.c primes_utils.c
+SOURCES_2=init.c
+SOURCES_3=producer.c
+SOURCES_4=consumer.c
+
+SOURCES_5=pierwsze_posix_balanced.c primes_utils.c
+SOURCES_6=licz_posix_balanced.c primes_utils.c
 
 BIN=bin
 
-CFLAGS=-g -lm -lrt
+CFLAGS=-g -lm -lrt -pthread
 
-all: $(EXEC_1)
+all: $(EXEC_1) $(EXEC_2) $(EXEC_3) $(EXEC_4)
 $(EXEC_1): $(SOURCES_1)
 	$(CC) -o $(BIN)/$(EXEC_1) $(CFLAGS) $(SOURCES_1)
 $(EXEC_2): $(SOURCES_2)
