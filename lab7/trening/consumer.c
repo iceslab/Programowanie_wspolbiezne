@@ -46,6 +46,7 @@ int main(int argc, char** argv)
  		sem_wait(&(wbuf->full)); 
  		sem_wait(&(wbuf->mutex));
  		printf("Odebrano: \"%s\"\n", wbuf->buffer[wbuf->head]);
+ 		printf("head: %d, tail: %d, count: %d\n", wbuf->head, wbuf->tail, wbuf->count);
  		wbuf->count--; 
  		wbuf->tail = (wbuf->tail +1) % BSIZE; 
  		sem_post(&(wbuf->mutex)); 

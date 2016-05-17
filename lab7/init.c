@@ -1,10 +1,7 @@
 #include "producer_consumer.h"
 
-#define REQUIRED_ARGS 2
-
 int main(int argc, char** argv)
 {
-
 	int size, fd; 
 	buffer_t *wbuf; 
  	shm_unlink("bufor"); 

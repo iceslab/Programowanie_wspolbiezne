@@ -2,7 +2,7 @@
 
 int is_prime(int n)
 {
-	if( n == 1)
+	if( n < 2)
 		return 0;
 
 	for(int i = 2; i < n; ++i)
@@ -115,9 +115,9 @@ void unlinkQueues()
 		perror("Nie można odłączyć kolejki out");
 }
 
-timespec diff(timespec start, timespec end)
+timespec_t diff(timespec_t start, timespec_t end)
 {
-	timespec temp;
+	timespec_t temp;
 	if ((end.tv_nsec-start.tv_nsec)<0) {
 		temp.tv_sec = end.tv_sec-start.tv_sec-1;
 		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;

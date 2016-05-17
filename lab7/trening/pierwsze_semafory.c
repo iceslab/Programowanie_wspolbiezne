@@ -23,11 +23,27 @@ void usage(void)
 
 int main(int argc, char** argv)
 {
+	timespec timeStart, timeEnd;
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &timeStart);
 	if(REQUIRED_ARGC != argc)
 	{
 		usage();
 		return 1;
 	}
+
+	int fd = shm_open("pierwsze_bufor", O_RDWR|O_CREAT , 0774); 
+ 	if(fd == -1)
+ 	{ 
+ 		perror("shm_open"); 
+ 		exit(-1); 
+ 	} 
+
+ 	int size = ftruncate(fd, sizeof(buf_t));   
+ 	if(size < 0) 
+	{
+		perror("trunc"); 
+		exit(-1); 
+	} 
 
 	buf_t *buf = NULL;
 	buf = (buf_t*) mmap(NULL, 
@@ -87,8 +103,12 @@ int main(int argc, char** argv)
 	{
 		sum += buf->data[i].sum;
 	}
-
-	printf("Znaleziono %d liczb pierwszych\n", sum);
+	
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &timeEnd);
+	timespec resultTime = diff(time1,time2);
+	printf("Znaleziono %d liczb pierwszych w %d.%d sekund\n", sum, resultTime.tv_sec, resultTime.tv_nsec);
+	munmap(buf, sizeof(buf_t));
+	shm_unlink("pierwsze_bufor"); 
 
 	return 0;
 

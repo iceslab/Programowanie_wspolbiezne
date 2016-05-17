@@ -35,6 +35,8 @@ typedef struct primes
 	int count;
 } msg_t;
 
+typedef struct timespec timespec_t;
+
 int is_prime(int n);
 int primes(int begin, int end);
 void calculate(int begin, 
@@ -48,6 +50,6 @@ void releaseSubprocessName(char** subprocessName);
 int makeQueues(mqd_t* queue_in, mqd_t* queue_out, int oflag);
 void releaseQueues(mqd_t* queue_in, mqd_t* queue_out);
 void unlinkQueues();
-timespec diff(timespec start, timespec end);
+timespec_t diff(timespec_t start, timespec_t end);
 
 #endif

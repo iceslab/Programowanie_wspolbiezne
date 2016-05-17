@@ -47,8 +47,8 @@ int main(int argc, char** argv)
 		sem_wait(&(wbuf->empty)); 
 		sem_wait(&(wbuf->mutex));
 		sprintf(wbuf->buffer[wbuf->head], "Producent %d, krok %d/%d", id, i, steps);
-		printf("Producent %d, krok %d/%d\n", id, i, steps);
 		printf("head: %d, tail: %d, count: %d\n", wbuf->head, wbuf->tail, wbuf->count);
+		printf("Producent %d, krok %d/%d\n\n", id, i, steps);
 		wbuf->count++;
 		wbuf->head = (wbuf->head +1) % BSIZE;
     	sem_post(&(wbuf->mutex)); 

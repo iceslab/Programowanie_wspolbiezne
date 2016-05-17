@@ -4,12 +4,11 @@
 
 void usage(void)
 {
-	printf("producer [id] [steps]\n");
+	printf("consumer [id] [steps]\n");
 }
 
 int main(int argc, char** argv)
 {
-
 	if(REQUIRED_ARGS != argc)
 	{
 		usage();
@@ -44,19 +43,22 @@ int main(int argc, char** argv)
 
 	for (; i <= steps; i++)
 	{
-		sem_wait(&(wbuf->empty)); 
-		sem_wait(&(wbuf->mutex));
-		sprintf(wbuf->buffer[wbuf->head], "Producent %d, krok %d/%d", id, i, steps);
-		printf("Producent %d, krok %d/%d\n", id, i, steps);
-		printf("head: %d, tail: %d, count: %d\n", wbuf->head, wbuf->tail, wbuf->count);
-		wbuf->count++;
-		wbuf->head = (wbuf->head +1) % BSIZE;
-    	sem_post(&(wbuf->mutex)); 
-    	sem_post(&(wbuf->full)); 
-    	sleep(1); 
+ 		sem_wait(&(wbuf->full)); 
+ 		sem_wait(&(wbuf->mutex));
+ 		printf("head: %d, tail: %d, count: %d\n", wbuf->head, wbuf->tail, wbuf->count);
+		int j = 0;
+ 		// for(; j < 3; j++)
+ 		// 	printf("Zawartosc %d: \"%s\"\n", j, wbuf->buffer[j]);
+ 		printf("Odebrano: \"%s\"\n", wbuf->buffer[wbuf->tail]);
+ 		printf("\n");
+ 		wbuf->count--; 
+ 		wbuf->tail = (wbuf->tail +1) % BSIZE; 
+ 		sem_post(&(wbuf->mutex)); 
+ 		sem_post(&(wbuf->empty)); 
+ 		sleep(1); 
 	}
 
-	printf("Producent %d: Koniec\n", id);
+	printf("Konsument %d: Koniec\n", id);
 	return 0;
 }
  
