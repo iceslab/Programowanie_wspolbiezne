@@ -9,14 +9,20 @@ int sendMessage(int s,
 {
 	int snd = sendto(s, msg, blen, 0, adr_serw, slen);
 	
-	printf("%d, %s\n", adr_serw->sa_family, adr_serw->sa_data);
-
 	if(snd < 0) 
 	{
 		perror("sendto()");
 		return -1;
 	}
-	printf("wyslano odpowiedz -res %d\n", snd);
+
+	struct sockaddr_in* addr = (struct sockaddr_in*) adr_serw;
+	printf("Wyslano komunikat do %s:%d snd %d\nTyp: %d, tresc: \"%s\", fh: %d\n",
+			inet_ntoa(addr->sin_addr), 
+			ntohs(addr->sin_port),
+			snd, 
+			msg->type, 
+			msg->buffer, 
+			msg->fh);
 	return 0;
 }
 
@@ -26,6 +32,7 @@ int receiveMessage(int s,
 					struct sockaddr * adr_serw, 
 					unsigned slen)
 {
+	memset((char *) msg, '\0', sizeof(mms_t));
 	int rec = recvfrom(s, msg, blen, 0, adr_serw, &slen);
 	if(rec < 0)
 	{
@@ -33,18 +40,28 @@ int receiveMessage(int s,
 		return -1;
 	} 
 
-	// printf("Odebrano komunikat z %s:%d res %d\n Typ: %d %s\n",
-	// 		inet_ntoa(adr_serw->sin_addr), 
-	// 		ntohs(adr_serw->sin_port),
-	// 		rec, 
-	// 		msg->type, 
-	// 		msg->buffer);
+
+	struct sockaddr_in* addr = (struct sockaddr_in*) adr_serw;
+
+	printf("Odebrano komunikat z %s:%d res %d\n Typ: %d, tresc: \"%s\", fh: %d\n",
+			inet_ntoa(addr->sin_addr), 
+			ntohs(addr->sin_port),
+			rec, 
+			msg->type, 
+			msg->buffer, 
+			msg->fh);
 
 	return 0;
 }
 
 int main(int argc, char *argv[])
 {
+	if(argc != 2)
+	{
+		printf("Za malo argumentow\n");
+		return -1;
+	}	
+
 	struct sockaddr_in adr_moj, adr_serw;
 	int s, i, snd, rec, blen = sizeof(mms_t);
 	unsigned slen = sizeof(adr_serw);
@@ -67,9 +84,18 @@ int main(int argc, char *argv[])
 	// Ustalenie adresu IP nadawcy
 	memset((char *) &adr_moj, 0, sizeof(adr_moj));
 	adr_moj.sin_family = AF_INET;
-	adr_moj.sin_port = htons(PORT);
+	adr_moj.sin_port = htons(PORT_CLI);
 	adr_moj.sin_addr.s_addr = htonl(INADDR_ANY);
 	
+	memset((char *) &adr_serw, 0, sizeof(adr_serw));
+	adr_serw.sin_family = AF_INET;
+	adr_serw.sin_port = htons(PORT);
+	if (inet_aton(argv[1], &adr_serw.sin_addr)==0) {
+		fprintf(stderr, "inet_aton() failed\n");
+		return -1;
+	}
+
+
 	if (bind(s,(struct sockaddr *) &adr_moj, sizeof(adr_moj)) == -1)
 	{
 		perror("bind");
@@ -110,6 +136,7 @@ int main(int argc, char *argv[])
 			msg.fh = -1;
 
 			sendMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
+			receiveMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
 		}
 		else if(!strcmp(message, "read"))
 		{
@@ -124,6 +151,7 @@ int main(int argc, char *argv[])
 			memset(msg.buffer, '\0', SIZE);
 
 			sendMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
+			receiveMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
 		}
 		else if(!strcmp(message, "close"))
 		{
@@ -136,6 +164,7 @@ int main(int argc, char *argv[])
 			memset(msg.buffer, '\0', SIZE);
 
 			sendMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
+			receiveMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
 		}
 		else if(!strcmp(message, "write"))
 		{
@@ -154,6 +183,7 @@ int main(int argc, char *argv[])
 			msg.count = strlen(msg.buffer);
 
 			sendMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
+			receiveMessage(s, &msg, blen, (struct sockaddr *) &adr_serw, slen);
 		}
 		else if(!strcmp(message, "stop"))
 		{

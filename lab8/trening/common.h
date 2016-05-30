@@ -6,7 +6,9 @@
 #define STOP 10 // Zatrzymanie serwera
 
 #define SIZE 512
-#define PORT 8080
+#define PORT 9950
+#define PORT_CLI 9951
+#define SRV_IP "127.0.0.1"
 
 #include <netinet/in.h>
 #include <stdio.h>
@@ -15,6 +17,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 
 typedef struct 
